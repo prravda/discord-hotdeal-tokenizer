@@ -1,0 +1,2 @@
+cmake>=3.12
+kiwipiepy==0.15.2
