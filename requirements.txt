@@ -1,2 +1,12 @@
-cmake>=3.12
+beautifulsoup4==4.12.2
+cmake==3.27.2
+dataclasses==0.6
+google==3.0.0
+grpcio==1.57.0
+grpcio-tools==1.57.0
 kiwipiepy==0.15.2
+kiwipiepy-model==0.15.0
+numpy==1.25.2
+protobuf==4.24.0
+soupsieve==2.4.1
+tqdm==4.66.1
