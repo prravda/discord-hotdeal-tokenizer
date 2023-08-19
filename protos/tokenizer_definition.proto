@@ -10,4 +10,5 @@ message TokenizingRequest {
 
 message TokenizingResult {
   repeated string tokens = 1;
+  repeated string words = 2;
 }
