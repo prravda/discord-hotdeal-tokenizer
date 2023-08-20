@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  tokenizer:
+    hostname: tokenizer
+    container_name: tokenizer
+    image: tokenizer:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    ports:
+      - "50051:50051"

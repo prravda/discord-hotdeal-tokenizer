@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service Tokenizer {
+  rpc Tokenize (TokenizingRequest) returns (TokenizingResult) {}
+}
+
+message TokenizingRequest {
+  string title = 1;
+}
+
+message TokenizingResult {
+  repeated string tokens = 1;
+  repeated string words = 2;
+}

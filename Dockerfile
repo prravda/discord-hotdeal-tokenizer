@@ -1,5 +1,4 @@
-FROM python:3.10
-RUN pip install --upgrade pip
+FROM python:3.11
 
 WORKDIR /hotdeal-tokenizer
 
