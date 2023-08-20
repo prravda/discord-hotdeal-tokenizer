@@ -1,17 +1,57 @@
+import asyncio
+from concurrent import futures
+from typing import List
+
+from grpc import aio
 from kiwipiepy import Kiwi
-import tokenizer_definition_pb2
+from pydantic import BaseModel
 
-kiwi = Kiwi()
+from src.proto_built_result.tokenizer_definition_pb2 import (TokenizingRequest,
+                                                             TokenizingResult)
+from src.proto_built_result.tokenizer_definition_pb2_grpc import (
+    TokenizerServicer, add_TokenizerServicer_to_server)
 
-result = tokenizer_definition_pb2.TokenizingResult()
+kiwi_instance = Kiwi()
 
-hotdeal_title = "[지마켓] 가시제거연구소 노르웨이 순살고등어 오렌지라벨 800g+800g (20,630원) (무료)"
-tokenizer_result = kiwi.tokenize(hotdeal_title)
 
-extracted_tokens = []
-for t in tokenizer_result:
-    extracted_tokens.append(t.form)
+class TokensAndWords(BaseModel):
+    words: List[str]
+    tokens: List[str]
 
-result.tokens.extend(extracted_tokens)
 
-print(result)
+def tokenize(title: str) -> TokensAndWords:
+    parsed_tokens = kiwi_instance.tokenize(title)
+
+    tokens: List[str] = [t.form for t in parsed_tokens]
+    words: List[str] = title.split()
+
+    return TokensAndWords(tokens=tokens, words=words)
+
+
+class TokenizerService(TokenizerServicer):
+    def Tokenize(self, request: TokenizingRequest, unused_context) -> TokenizingResult:
+        tokenized_result = tokenize(request.title)
+
+        protobuf_result = TokenizingResult()
+
+        protobuf_result.words.extend(tokenized_result.words)
+        protobuf_result.tokens.extend(tokenized_result.tokens)
+
+        return protobuf_result
+
+
+async def serve() -> None:
+    server = aio.server(futures.ThreadPoolExecutor())
+    add_TokenizerServicer_to_server(TokenizerService(), server)
+
+    port_number = 50051
+    server.add_insecure_port(f"[::]:{port_number}")
+
+    await server.start()
+
+    print(f"gRPC server listen on {port_number}!")
+
+    await server.wait_for_termination()
+
+
+asyncio.get_event_loop().run_until_complete(serve())
