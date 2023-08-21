@@ -13,5 +13,7 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
+    volumes:
+      - ./static:/hotdeal-tokenizer/static
     ports:
-      - "50051:50051"
+      - "8000:8000"
